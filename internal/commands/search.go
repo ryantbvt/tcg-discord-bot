@@ -62,6 +62,7 @@ func (c *SingleSearchCommand) Handle(s *discordgo.Session, i *discordgo.Interact
 	})
 }
 
+// NOT SUPPORTED
 func (c *SingleSearchCommand) HandleSync(i *discordgo.Interaction) *discordgo.InteractionResponse {
 	return &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
