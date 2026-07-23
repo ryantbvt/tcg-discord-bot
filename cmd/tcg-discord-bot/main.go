@@ -10,11 +10,15 @@ import (
 
 	"github.com/ryantbvt/tcg-discord-bot/internal/commands"
 	"github.com/ryantbvt/tcg-discord-bot/internal/framework"
+	"github.com/ryantbvt/tcg-discord-bot/internal/tcgapi"
 )
 
 func main() {
 	// load configs
 	cfg := framework.LoadEnv()
+
+	// TCGdex Client
+	tcgClient := tcgapi.NewClient("en")
 
 	// initialize discord bot
 	svr, err := discordgo.New("Bot " + cfg.DiscToken)
@@ -27,6 +31,7 @@ func main() {
 
 	// Slash commands
 	router.Commands().Add(&commands.PingCommand{})
+	router.Commands().Add(commands.NewSingleSearchCommand(tcgClient))
 
 	// add handlers
 	svr.AddHandler(router.Handler())
@@ -38,6 +43,11 @@ func main() {
 	}
 
 	defer svr.Close()
+
+	// register slash commands with Discord
+	if err := router.Sync(svr); err != nil {
+		log.Fatalf("Error syncing commands: %v", err)
+	}
 
 	log.Println("Bot is now running")
 
